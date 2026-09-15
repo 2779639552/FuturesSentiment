@@ -74,6 +74,22 @@ def probe_search(page, keyword: str, debug: bool = False) -> dict:
         if block:
             out["block"] = block
             return out
+        # 等真实视频卡片出现(骨架屏阶段提取必空;登录态下内容靠 XHR 慢慢填充)
+        try:
+            page.wait_for_selector(
+                '[data-e2e="scroll-list-item-item"] a[href*="/video/"]',
+                timeout=20000, state="attached")
+        except Exception:
+            # 兜底:再滚两轮等懒加载
+            for _ in range(2):
+                page.evaluate("window.scrollBy(0, 900)")
+                _rand_sleep(2, 3)
+            try:
+                page.wait_for_selector(
+                    '[data-e2e="scroll-list-item-item"] a[href*="/video/"]',
+                    timeout=10000, state="attached")
+            except Exception:
+                pass
         # 滚动触发懒加载
         for _ in range(3):
             page.evaluate("window.scrollBy(0, 900)")

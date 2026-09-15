@@ -156,7 +156,7 @@ AUTH_GUIDANCE = {  # 【变量】平台名→重登录指引 (无对应登录脚
     "xueqiu": "更新 credentials/xueqiu_cookie.txt(需手动从浏览器复制新 Cookie)",
     "eastmoney_guba": "重新登录东方财富股吧并更新会话凭证",
     "xhs": "检查小红书登录状态并重新登录",
-    "douyin": "运行 python douyin_login.py 扫码重新登录(登录态: credentials/douyin_login_state.json)",
+    "douyin": "运行 python douyin_login_profile.py 扫码重新登录(持久 profile: credentials/douyin_profile)",
 }
 
 
