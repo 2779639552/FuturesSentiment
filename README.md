@@ -26,7 +26,7 @@
 
 | 能力 | 说明 |
 |------|------|
-| 多平台采集 | 小红书 / 微博 / 知乎 / 雪球（+抖音/B站适配层已就绪） |
+| 多平台采集 | 小红书 / 微博 / 知乎 / 雪球 / 东财股吧 / 抖音（B站适配层已就绪） |
 | NER 品种识别 | **50 品种** × 多别名，支持合约代码匹配（RB2501/i2505）、品种共现、板块归属 |
 | 双引擎情感分析 | 规则引擎（期货专用词库，7级分类，品种级 aspect-based）+ LLM 引擎（Claude/GPT/DeepSeek） |
 | 多模态图片分析 | Ollama 本地 VL 模型两阶段分析（图片分类 + OCR + 结构化情感） |
@@ -192,7 +192,8 @@ ollama pull qwen2.5vl:3b
 | 微博 | ✅ 稳定 | 免登录 API，1,069 条已验证 |
 | 知乎 | ✅ 稳定 | 需 Cookie 登录态 |
 | 雪球 | ✅ 可用 | Playwright 反检测接入（阿里云 WAF） |
-| 抖音 | 🚧 实验 | MediaCrawler 方案已评估，适配器雏形存在 |
+| 东财股吧 | ✅ 可用 | Playwright APIRequestContext 绕 WAB TLS 指纹门，urllib3 降级规避 HTTP/2 |
+| 抖音 | ✅ 落地 | MediaCrawler 登录态 + `platforms/douyin_adapter.py`（实验性） |
 | B站 | 🚧 未实施 | API 端点已配置 |
 
 ## 与 FuturesMind 的关系
@@ -233,8 +234,8 @@ FuturesSentiment (本仓库)                  FuturesMind (投研系统)
     ├── dashboard.py              # HTML 看板生成
     ├── backtest_weights.py       # 情绪权重回测
     ├── generate_tradingagents_sentiment.py  # FuturesMind 对接
-    ├── config.py                 # 品种词典 + API 端点
-    ├── platforms/                # 平台适配层
+    ├── config.py                 # 品种词典 + API 端点（关键词池 20 品种）
+    ├── platforms/                # 平台适配层（含 douyin_adapter / eastmoney_guba_adapter）
     └── output/                   # 采集/分析产物（不入库）
 ```
 
@@ -242,7 +243,7 @@ FuturesSentiment (本仓库)                  FuturesMind (投研系统)
 
 - **小红书反爬严格**：空批次频发，需定期刷新 Cookie，首次扫码 `python xhs_scraper.py`
 - **知乎数据量偏少**：关键词匹配率低，建议放宽 `PLATFORM_KEYWORDS["zhihu"]`
-- **抖音未落地**：MediaCrawler 方案已评估但尚未编码实现
+- **抖音适配器为实验版**：依赖 MediaCrawler 登录态，关键词命中率待优化
 - **无实时推送**：目前为离线 HTML 看板，如需实时需接入流式处理
 
 ---
