@@ -8,6 +8,8 @@
     weibo  — 微博 (m.weibo.cn 移动端 API)
     zhihu  — 知乎 (Playwright/CDP 浏览器)
     xueqiu — 雪球 (xueqiu.com API, Cookie 认证)
+    eastmoney_guba — 东方财富股吧 (Playwright APIRequestContext, WAF TLS 指纹门)
+    douyin — 抖音 (Playwright 浏览器模拟;视频+评论双形态,评论=独立 item)
 """
 
 from .base import PlatformAdapter
@@ -15,6 +17,8 @@ from .xhs_adapter import XHSAdapter
 from .weibo_adapter import WeiboAdapter
 from .zhihu_adapter import ZhihuAdapter
 from .xueqiu_adapter import XueqiuAdapter
+from .eastmoney_guba_adapter import EastmoneyGubaAdapter
+from .douyin_adapter import DouyinAdapter
 
 # 注册表
 ADAPTERS: dict[str, type[PlatformAdapter]] = {
@@ -22,6 +26,8 @@ ADAPTERS: dict[str, type[PlatformAdapter]] = {
     "weibo": WeiboAdapter,
     "zhihu": ZhihuAdapter,
     "xueqiu": XueqiuAdapter,
+    "eastmoney_guba": EastmoneyGubaAdapter,
+    "douyin": DouyinAdapter,
 }
 
 ADAPTER_DISPLAY_NAMES = {
@@ -29,6 +35,8 @@ ADAPTER_DISPLAY_NAMES = {
     "weibo": "微博",
     "zhihu": "知乎",
     "xueqiu": "雪球",
+    "eastmoney_guba": "东财股吧",
+    "douyin": "抖音",
 }
 
 

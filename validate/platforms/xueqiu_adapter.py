@@ -158,7 +158,8 @@ class XueqiuAdapter(PlatformAdapter):
 
             result = self._page.evaluate(f"""
                 async () => {{
-                    const url = '/query/v1/search/status.json?sortId=1&q={q_enc}&count={per_page}&page={page}';
+                            // 2026-08-26 sortId=2 时间排序(实测 sortId=1 相关性排序返回旧帖,每日 --since 窗口过滤成 0; sortId=2 返回当天帖)
+        const url = '/query/v1/search/status.json?sortId=2&q={q_enc}&count={per_page}&page={page}';
                     try {{
                         const r = await fetch(url);
                         if (!r.ok) return null;

@@ -33,6 +33,7 @@ VARIETY_NAME_TO_SYMBOL = {
     "原油": "SC",       "PTA": "TA",        "甲醇": "MA",
     "PVC": "V",         "PP": "PP",         "塑料": "L",
     "橡胶": "RU",       "沥青": "BU",       "尿素": "UR",
+    "燃料油": "FU",     "低硫燃料油": "LU", "20号胶": "NR",
     "纯碱": "SA",       "玻璃": "FG",       "乙二醇": "EG",
     "苯乙烯": "EB",     "短纤": "PF",
     "豆粕": "M",        "豆油": "Y",        "棕榈油": "P",
@@ -42,6 +43,9 @@ VARIETY_NAME_TO_SYMBOL = {
     "红枣": "CJ",       "花生": "PK",
     "工业硅": "SI",     "碳酸锂": "LC",     "氧化铝": "AO",
     "烧碱": "SH",       "对二甲苯": "PX",
+    # 2026-09-09 品种池收缩补入(池内此前缺映射的品种)
+    "LPG": "PG",        "液化石油气": "PG",
+    "丁二烯橡胶": "BR", "纯苯": "BZ",       "多晶硅": "PS",
     # Financial futures
     "上证50股指期货": "IH",     "沪深300股指期货": "IF",
     "中证500股指期货": "IC",    "中证1000股指期货": "IM",
@@ -60,6 +64,7 @@ SECTOR_MAP = {
     "NI": "有色金属", "SN": "有色金属", "AU": "贵金属", "AG": "贵金属",
     "SC": "能源化工", "TA": "能源化工", "MA": "能源化工", "V": "能源化工",
     "PP": "能源化工", "L": "能源化工", "RU": "能源化工", "BU": "能源化工",
+    "FU": "能源化工", "LU": "能源化工", "NR": "能源化工",
     "UR": "能源化工", "SA": "能源化工", "FG": "能源化工", "EG": "能源化工",
     "EB": "能源化工", "PF": "能源化工", "SI": "能源化工", "LC": "能源化工",
     "AO": "有色金属", "SH": "能源化工", "PX": "能源化工",
@@ -234,7 +239,9 @@ def generate_sentiment_json(variety_name: str, trends_data: dict,
         })
 
     # Platform weights from backtest
-    platform_weights = weights.get("platform_weights", {})
+    # 【修复 2026-08-26】weights 文件里平台权重存在 "weights" 键(apply_and_save 写入),
+    # 原读 "platform_weights" 恒为空 {} → 生成的 *_sentiment.json 平台权重段对 LLM 缺失。
+    platform_weights = weights.get("weights", {})
     weight_source = weights.get("weight_source", "not_calibrated")
 
     # Combined metrics (sentiment-price correlation)
@@ -251,7 +258,7 @@ def generate_sentiment_json(variety_name: str, trends_data: dict,
         "variety_name": variety_name,
         "sector": sector,
         "updated": now_str,
-        "source": "思路2多平台采集：微博+知乎+小红书 | 规则引擎+LLM双引擎情感分析",
+        "source": "思路2多平台采集：微博+知乎+小红书+雪球+东财股吧+抖音 | 规则引擎+LLM双引擎情感分析",
         "source_platforms": list(summary.get("platforms", {}).keys()),
         "stale_after_hours": 48,
         "data": {
@@ -274,7 +281,7 @@ def generate_sentiment_json(variety_name: str, trends_data: dict,
             "platform_weights": {
                 "weights": platform_weights,
                 "source": weight_source,
-                "note": "平台权重来自回测：基于方向准确率优化。xhs/weibo/zhihu 分别代表小红书/微博/知乎的贡献权重。",
+                "note": "平台权重来自回测：基于方向准确率优化。xhs/weibo/zhihu/xueqiu/eastmoney_guba/douyin 分别代表小红书/微博/知乎/雪球/东财股吧/抖音的贡献权重。",
             },
             "sentiment_price_correlation": {
                 "direction_accuracy": combined.get("direction_accuracy"),
@@ -302,7 +309,7 @@ def generate_sentiment_json(variety_name: str, trends_data: dict,
                 },
                 "limitations": [
                     "数据量有限（日均1-3条），低数据量品种信号噪声大",
-                    "小红书反爬严格，主要数据来自微博+知乎",
+                    "小红书反爬严格，主要数据来自微博+知乎；抖音以视频评论区文本为主（2026-09 试点）",
                     "散户情绪可能为反向指标（一致性看多≈顶部）",
                     "无持仓数据（散户净多/净空比），纯文本情绪分析",
                     "情感规则引擎对期货领域讽刺/反语识别有限",

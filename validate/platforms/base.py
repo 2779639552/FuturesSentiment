@@ -125,6 +125,21 @@ FIELD_MAPPING_TABLE = {
         "image_urls":     "pics[].url",
         "url":            "xueqiu.com/{id} / target",
     },
+    # 抖音(2026-09-07): 双形态 —— 视频卡片(dy:v:{aweme_id}) + 评论独立条目(dy:c:{vid}:{cid})
+    "douyin": {
+        "platform":       '"douyin"',
+        "note_id":        '"dy:v:{aweme_id}" 视频 / "dy:c:{video_id}:{内容哈希}" 评论',
+        "title":          "视频 desc 前60字 / '[抖音评论] ' + 所属视频标题前50字",
+        "desc":           "视频 desc / 评论正文(情感分析核心输入)",
+        "author_name":    "视频卡片 author / 评论者昵称",
+        "author_id":      '"" (DOM 无稳定 id)',
+        "like_count":     "评论点赞('1.2万' 中文数字解析) / 视频 0",
+        "comment_count":  "0",
+        "publish_time":   "相对时间('3天前'/'昨天 HH:MM')→ datetime;视频卡片无时间=空",
+        "ip_location":    '"" (不支持)',
+        "note_type":      '"video" / "comment"',
+        "url":            "douyin.com/video/{id}",
+    },
 }
 
 
